@@ -18,7 +18,13 @@ export const postExpense = async (data: Expense) => {
   });
   return res.json();
 };
-
+export const updateExpense = async (id: string, data: Expense) => {
+  await fetch(`${BASE_URL}/expenses/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+};
 export const deleteExpense = async (id: string) => {
   await fetch(`${BASE_URL}/expenses/${id}`, { method: "DELETE" });
 };

@@ -1,51 +1,58 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Toaster } from "react-hot-toast";
+import Navbar from "@/components/Navbar";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseTable from "@/components/ExpenseTable";
 import ExpenseChart from "@/components/ExpenseChart";
-import Filter from "@/components/Filter";
-import { getExpenses, deleteExpense } from "@/lib/api";
+import EditModal from "@/components/EditModal";
+import DeleteModal from "@/components/DeleteModal";
+import { getExpenses, deleteExpense, updateExpense } from "@/lib/api";
 import { Expense } from "@/types/expense";
 
 export default function Home() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [stats, setStats] = useState([]);
-  const [category, setCategory] = useState("All");
+  const [editEx, setEditEx] = useState<Expense | null>(null);
+  const [delId, setDelId] = useState<string | null>(null);
 
   const loadData = async () => {
-    const data = await getExpenses(category);
-    setExpenses(data);
+    setExpenses(await getExpenses("All"));
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/expenses-stats`);
     setStats(await res.json());
   };
 
-  useEffect(() => { loadData(); }, [category]);
+  useEffect(() => { loadData(); }, []);
 
   return (
-    <div className="min-h-screen bg-base-200 pb-10">
-      
-      <main className="max-w-6xl mx-auto p-4 md:p-8">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <h1 className="text-3xl font-bold">Financial Dashboard</h1>
-          <Filter onFilter={setCategory} />
-        </div>
+    <div className="min-h-screen bg-base-200">
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <ExpenseForm onAdd={loadData} />
-            <ExpenseTable 
-              expenses={expenses} 
-              onDelete={async (id) => { await deleteExpense(id); loadData(); }} 
-            />
-          </div>
-          <div className="card bg-base-100 shadow-xl border border-base-300 h-fit p-6">
-            <h2 className="text-xl font-bold mb-4">Category Analysis</h2>
-            <ExpenseChart data={stats} />
-          </div>
+      <main className="max-w-6xl mx-auto p-4 md:p-8 grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <ExpenseForm onAdd={loadData} />
+          <ExpenseTable 
+            expenses={expenses} 
+            onEdit={setEditEx} 
+            onDelete={setDelId} 
+          />
+        </div>
+        <div className="card bg-base-100 p-6 shadow-xl h-fit">
+          <h2 className="text-xl font-bold mb-4">Analytics</h2>
+          <ExpenseChart data={stats} />
         </div>
       </main>
-      <Toaster />
+
+      <EditModal 
+        expense={editEx} 
+        isOpen={!!editEx} 
+        onClose={() => setEditEx(null)} 
+        onSave={async (d) => { await updateExpense(editEx!._id!, d); loadData(); setEditEx(null); }} 
+      />
+      
+      <DeleteModal 
+        isOpen={!!delId} 
+        onClose={() => setDelId(null)} 
+        onConfirm={async () => { await deleteExpense(delId!); loadData(); setDelId(null); }} 
+      />
     </div>
   );
 }

@@ -1,47 +1,44 @@
-import { Expense } from "@/types/expense";
+import { Edit2, Trash2 } from "lucide-react";
 
-export default function ExpenseTable({ expenses, onDelete }: { expenses: Expense[], onDelete: (id: string) => void }) {
+export default function ExpenseTable({ expenses, onEdit, onDelete }: any) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-base-200 bg-base-100 shadow-sm">
-      <table className="table table-zebra w-full">
+    <div className="overflow-x-auto bg-base-100 rounded-xl shadow-sm border border-base-200">
+        
+      <table className="table w-full">
         <thead className="bg-base-200/50">
           <tr>
-            <th className="font-semibold text-base-content/70">Title</th>
-            <th className="font-semibold text-base-content/70">Category</th>
-            <th className="font-semibold text-base-content/70">Amount</th>
-            <th className="font-semibold text-base-content/70">Date</th>
-            <th className="text-right font-semibold text-base-content/70">Action</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {expenses.map((ex) => (
-            <tr key={ex._id} className="hover:bg-base-200/30 transition-colors">
-              <td className="font-medium">{ex.title}</td>
-              <td>
-                <span className="badge badge-primary badge-sm badge-soft">
-                  {ex.category}
-                </span>
-              </td>
-              <td className="font-mono font-semibold">${ex.amount.toFixed(2)}</td>
-              <td className="text-base-content/70">{ex.date}</td>
-              <td className="text-right">
-                <button 
-                  onClick={() => onDelete(ex._id!)} 
-                  className="btn btn-ghost btn-xs text-error hover:bg-error/10"
-                >
-                  Delete
-                </button>
+          {expenses.length > 0 ? (
+            expenses.map((ex: any) => (
+              <tr key={ex._id} className="hover:bg-base-200/30">
+                <td>{ex.title}</td>
+                <td><span className="badge badge-primary badge-soft">{ex.category}</span></td>
+                <td>BDT {ex.amount}</td>
+                <td className="flex gap-2 justify-end">
+                  <button onClick={() => onEdit(ex)} className="btn btn-ghost btn-xs"><Edit2  size={16} /></button>
+                  <button onClick={() => onDelete(ex._id)} className="btn btn-ghost btn-xs text-error"><Trash2 size={16} /></button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4} className="text-center py-10">
+                <div className="flex flex-col items-center text-base-content/50">
+                  <span className="text-4xl mb-2">📂</span>
+                  <p className="text-lg font-medium">No expenses found</p>
+                  <p className="text-sm">Start by adding your first expense!</p>
+                </div>
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
-      
-      {expenses.length === 0 && (
-        <div className="p-8 text-center text-base-content/50">
-          No expenses found.
-        </div>
-      )}
     </div>
   );
 }
