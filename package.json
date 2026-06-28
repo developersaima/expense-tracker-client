@@ -8,9 +8,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "daisyui": "^5.6.3",
     "next": "16.2.9",
+    "next-themes": "^0.4.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.80.0",
+    "react-hot-toast": "^2.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
