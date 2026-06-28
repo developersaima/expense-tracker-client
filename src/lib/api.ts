@@ -2,11 +2,14 @@ import { Expense } from "@/types/expense";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-export const getExpenses = async (): Promise<Expense[]> => {
-  const res = await fetch(`${BASE_URL}/expenses`);
+export const getExpenses = async (category: string = "All"): Promise<Expense[]> => {
+  const url = category === "All" 
+    ? `${process.env.NEXT_PUBLIC_API_URL}/expenses` 
+    : `${process.env.NEXT_PUBLIC_API_URL}/expenses?category=${category}`;
+    
+  const res = await fetch(url);
   return res.json();
 };
-
 export const postExpense = async (data: Expense) => {
   const res = await fetch(`${BASE_URL}/expenses`, {
     method: "POST",
